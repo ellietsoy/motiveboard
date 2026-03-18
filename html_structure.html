@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>motiveboard.</title>
+<link rel="stylesheet" href="styling.css">
+</head>
+
+<body>
+
+<div class="toolbar">
+    motiveboard.
+
+    <button onclick="createShape('character')">Character</button>
+    <button onclick="createShape('suspect')">Suspect</button>
+    <button onclick="createShape('event')">Event</button>
+    <button onclick="createShape('clue')">Clue</button>
+    <button onclick="createShape('note')">Create Note</button>
+    <button id="connect">Create Connection</button>
+</div>
+
+<div class="workspace" id="workspace">
+
+    <svg id="connections"></svg>
+
+    <div id="shapes"></div>
+
+</div>
+
+<script src="dynamics.js"></script>
+
+</body>
+</html>
