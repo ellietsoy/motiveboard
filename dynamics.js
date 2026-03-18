@@ -10,6 +10,8 @@ I put them all to a single template in hopes to optimize it better */
 
 const connectBtn = document.getElementById("connect")
 
+const exportBtn = document.getElementById("export")
+
 let dragShape = null
 let offsetX = 0
 let offsetY = 0
@@ -20,6 +22,7 @@ let selectedShape = null
 
 const connections = []
 
+//the array of shape names/categories
 const templates = {
 
     character:
@@ -56,6 +59,7 @@ connectBtn.onclick = () => {
     firstShape = null
 }
 
+//creating a shape
 function createShape(type){
 
     const shape = document.createElement("div")
@@ -81,7 +85,7 @@ function createShape(type){
 
 }
 
-
+//the following three functions manage the draging of a shape, considering the connections
 function startDrag(e){
     
     dragShape = e.target
@@ -116,6 +120,7 @@ function stopDrag(){
 
 }
 
+
 function handleConnection(e){
 
     if(!connectMode) return
@@ -134,6 +139,7 @@ function handleConnection(e){
 
 }
 
+//creating connections between shapes
 function createConnection(shape1,shape2){
 
     const line = document.createElementNS("http://www.w3.org/2000/svg","line")
@@ -153,6 +159,7 @@ function createConnection(shape1,shape2){
 
 }
 
+//srlecting a shape
 function selectShape(shape){
 
     document.querySelectorAll(".shape").forEach(s=>{
@@ -160,10 +167,11 @@ function selectShape(shape){
     })
 
     selectedShape = shape
-    shape.style.borderColor="red"
+    shape.style.borderColor="#bd1818"
 
 }
 
+//removing shapes
 document.addEventListener("keydown", (e)=>{
 
     if(e.key === "Delete" && selectedShape){
@@ -180,7 +188,7 @@ document.addEventListener("keydown", (e)=>{
 
 }, true)
 
-
+//the function for removing connections
 function removeConnections(shape){
 
     for(let i=connections.length-1;i>=0;i--){
@@ -198,6 +206,7 @@ function removeConnections(shape){
 
 }
 
+//the function for updating the connection between two shapes
 function updateConnections(){
 
     connections.forEach(conn=>{
@@ -217,6 +226,21 @@ function updateConnections(){
         conn.line.setAttribute("y1",y1)
         conn.line.setAttribute("x2",x2)
         conn.line.setAttribute("y2",y2)
+
+    })
+
+}
+
+//the function for exporting the PNG image of the board
+exportBtn.onclick = () => {
+
+    html2canvas(workspace).then(canvas => {
+
+    const link = document.createElement("a")
+    link.download = "motiveboard.png"
+    link.href = canvas.toDataURL()
+
+    link.click()
 
     })
 
