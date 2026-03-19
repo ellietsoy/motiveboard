@@ -12,6 +12,27 @@ const connectBtn = document.getElementById("connect")
 
 const exportBtn = document.getElementById("export")
 
+const saveBtn = document.getElementById("save");
+
+saveBtn.onclick = () => {
+    fetch("http://localhost:8080/api/board/save", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(getBoardData())
+    })
+    .then(() => console.log("Board saved!"));
+}
+
+document.getElementById("load").onclick = () => {
+
+    fetch("http://localhost:8080/api/board/load")
+    .then(res => res.json())
+    .then(data => loadBoard(data))
+
+}
+
 let dragShape = null
 let offsetX = 0
 let offsetY = 0
@@ -22,7 +43,7 @@ let selectedShape = null
 
 const connections = []
 
-//the array of shape names/categories
+//a set of shape names/categories in a template object
 const templates = {
 
     character:
@@ -63,6 +84,7 @@ connectBtn.onclick = () => {
 function createShape(type){
 
     const shape = document.createElement("div")
+    shape.dataset.id = crypto.randomUUID()
 
     shape.classList.add("shape")
     shape.classList.add("rectangle")
@@ -125,10 +147,10 @@ function handleConnection(e){
 
     if(!connectMode) return
 
-    if(!firstShape){
+        if(!firstShape){
 
-        firstShape = e.target
-        return
+            firstShape = e.target
+            return
 
 }
 
@@ -244,4 +266,49 @@ exportBtn.onclick = () => {
 
     })
 
+}
+
+function loadBoard(data){
+
+    shapesContainer.innerHTML = ""
+    svg.innerHTML = ""
+    connections.length = 0
+
+    const shapeMap = {}
+
+    data.shapes.forEach(s => {
+
+        createShape(s.type)
+
+        const shape = shapesContainer.lastChild
+
+        shape.dataset.id = s.id
+        shape.innerText = s.text
+        shape.style.left = s.x
+        shape.style.top = s.y
+
+        shapeMap[s.id] = shape
+
+    })
+
+    data.connections.forEach(c => {
+        createConnection(shapeMap[c.from], shapeMap[c.to])
+    })
+
+}
+
+function getBoardData() {
+    return {
+        shapes: [...document.querySelectorAll(".shape")].map(shape => ({
+            id: shape.dataset.id,
+            type: [...shape.classList].find(c => templates[c]),
+            text: shape.innerText,
+            x: shape.style.left,
+            y: shape.style.top
+        })),
+        connections: connections.map(c => ({
+            from: c.shape1.dataset.id,
+            to: c.shape2.dataset.id
+        }))
+    };
 }
