@@ -99,6 +99,7 @@ function createShape(type){
     shapesContainer.appendChild(shape)
 
     shape.addEventListener("mousedown", startDrag)
+    shape.addEventListener("touchstart", startDragTouch)
 
     shape.addEventListener("click",(e)=>{
         selectShape(e.currentTarget)
@@ -142,6 +143,36 @@ function stopDrag(){
 
 }
 
+// functions for mobile usage
+function startDragTouch(e) {
+    e.preventDefault()
+
+    dragShape = e.target
+    const touch = e.touches[0]
+
+    offsetX = touch.clientX - dragShape.offsetLeft
+    offsetY = touch.clientY - dragShape.offsetTop
+
+    document.addEventListener("touchmove", dragTouch)
+    document.addEventListener("touchend", stopDragTouch)
+}
+
+function dragTouch(e) {
+    if (!dragShape) return
+
+    const touch = e.touches[0]
+
+    dragShape.style.left = (touch.clientX - offsetX) + "px"
+    dragShape.style.top = (touch.clientY - offsetY) + "px"
+
+    updateConnections()
+}
+
+function stopDragTouch() {
+    dragShape = null
+    document.removeEventListener("touchmove", dragTouch)
+    document.removeEventListener("touchend", stopDragTouch)
+}
 
 function handleConnection(e){
 
